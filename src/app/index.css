@@ -1,0 +1,25 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+
+  --color-background-primary:#ffffff;
+  --color-background-secondary: #dfdfb4;
+
+  --color-text: #373a3c;
+  --color-background-hover: #c7beda;
+
+  --font-size-s:14px;
+  --font-size-m:16px;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+
+  line-height:1;
+  min-width: 320px;
+  min-height: 100vh;
+
+  background-color: var(--color-background-primary);
+  color: var(--color-text);
+}

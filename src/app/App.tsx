@@ -6,7 +6,7 @@ function App() {
 
     return (
         <HashRouter basename={import.meta.env.VITE_PUBLIC_URL}>
-           <div>LENA TEST</div>
+        <div>LENA TEST</div>
         </HashRouter>
     )
 }

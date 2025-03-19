@@ -1,12 +1,17 @@
 import '../app/App.css'
-import {HashRouter} from 'react-router-dom';
+import {HashRouter, Route, Routes} from 'react-router-dom';
+import {Auth} from '@/features/auth/ui/Auth.tsx';
+import {TablePage} from '@/features/TablePage/ui/TablePage.tsx';
 
 
 function App() {
 
     return (
         <HashRouter basename={import.meta.env.VITE_PUBLIC_URL}>
-        <div>LENA TEST</div>
+        <Routes>
+            <Route path="/" element={<Auth/>} />
+            <Route path="/table-page" element={<TablePage/>} />
+        </Routes>
         </HashRouter>
     )
 }

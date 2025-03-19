@@ -24,15 +24,7 @@ const SET_APP_STATUS = 'SET_APP_STATUS'
 export const appReducer = (state: initialStateType = initialState, action: any): initialStateType => {
     switch (action.type) {
         case SET_BOOK:
-            return {
-                ...state,
-                books: action.payload.map((book: Book) => ({
-                    ...book,
-                    author: getRandomAuthor(),
-                    price: getRandomPrice(),
-                    url:getRandomImageUrl()
-                }))
-            }
+            return {...state,}
         default:
             return state
     }

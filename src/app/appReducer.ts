@@ -1,38 +1,46 @@
+import {authAPI} from '@/features/auth/model/authApi.ts';
+import {LoginData} from '@/app/app.types.ts';
 
 export type RequestStatus = 'idle' | 'loading' | 'succeeded' | 'failed'
 
 
 const initialState = {
-
+    token: '',
     status: 'idle',
+    error: null
 }
 
 export type initialStateType = typeof initialState;
 
-const FETCH_DATA = 'FETCH_DATA'
+const LOGIN = 'LOGIN'
 
 
 export const appReducer = (state: initialStateType = initialState, action: any): initialStateType => {
     switch (action.type) {
-        case FETCH_DATA:
-            return {...state,}
+        case LOGIN:
+            return {...state, token: action.payload.token};
         default:
             return state
     }
 }
 
 
-export const fetchData = () => {
+export const loginAC = (token: string) => {
     return {
-        type: FETCH_DATA,
-
+        type: LOGIN,
+        payload: token
     } as const
 }
 
-/*export type SetBook = ReturnType<typeof setBookAC>
-export type SetAppStatus = ReturnType<typeof setAppStatusAC>
-export type AppActions = SetBook | SetAppStatus*/
+export type Login = ReturnType<typeof loginAC>
+export type AppActions = Login
 
-export const fetchDataTC = () => async () => {
+
+export const loginTC = (data: LoginData) => async (dispatch: any) => {
+    return authAPI.login(data).then(res => {
+        if (res.data.error_code === 0) {
+            dispatch(loginAC(res.data.data.token))
+        }
+    })
 
 }

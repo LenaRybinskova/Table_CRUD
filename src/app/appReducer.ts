@@ -38,9 +38,11 @@ export type AppActions = Login
 export const loginTC = (data: LoginData) => async (dispatch: any) => {
     return authAPI.login(data).then(res => {
         if (res.data.error_code === 0) {
-            const token = res.data.data.token
-            dispatch(loginAC({token}))
+            if(res.data?.data?.token){
+                const token = res.data?.data?.token
+                dispatch(loginAC({token}))
+                return token
+            }
         }
     })
-
 }

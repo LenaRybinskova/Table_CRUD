@@ -12,17 +12,20 @@ type FormValue = {
     password: string
 }
 
+//TODO интерсептор настроить
 export const Auth = () => {
     const {handleSubmit, control, formState: {errors, isValid}} = useForm<FormValue>({mode: 'onBlur'});
     const navigate = useNavigate();
     const dispatch = useAppDispatch()
 
     const onSubmit: SubmitHandler<FormValue> = (data: FormValue) => {
-        dispatch(loginTC(data)).then(() => {
-            localStorage.setItem('username', data.username)
+        dispatch(loginTC(data)).then(res => {
+            if(res){
+                localStorage.setItem('username', data.username)
+                localStorage.setItem('token', res)
+            }
             navigate('/table-page')
         })
-
     };
 
     return (

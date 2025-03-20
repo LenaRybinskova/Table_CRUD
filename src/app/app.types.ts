@@ -1,7 +1,7 @@
 export type BaseResponse<T> = {
     error_code: number
     profiling: string
-    data:T
+    data?:T
     error_message: string
     timings: null
 }

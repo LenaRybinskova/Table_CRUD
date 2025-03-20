@@ -6,6 +6,18 @@ export const instance = axios.create({
     baseURL: 'https://test.v5.pryaniky.com',
 })
 
+/*instance.interceptors.request.use((config) => {
+    const token = localStorage.getItem("token");
+
+    if (token && !config.url?.includes("/login")) {
+        config.headers["x-auth"] = token;
+    }
+
+    return config;
+});
+
+export default instance;*/
+
 
 export const authAPI = {
     login(data:LoginData) {

@@ -4,6 +4,7 @@ import {useEffect} from 'react';
 import {fetchTableDataTC} from '@/features/TablePage/model/tableReducer.ts';
 import {Document} from '@/features/TablePage/model/tableAPI.types.ts';
 import {Card} from '@/common/components/Card/Card.tsx';
+import {AddDocumentFrom} from '@/features/TablePage/ui/AddDocument/AddDocumentForm.tsx';
 
 
 export const TablePage = () => {
@@ -20,11 +21,10 @@ export const TablePage = () => {
         dispatch(fetchTableDataTC(token))
     }, []);
 
-
-
     return (
         <div>
-            {documents?.map(document => (<Card document={document} key={document.id}/>))}
+            <AddDocumentFrom/>
+            {documents?.map(document => (<Card document={document} key={document.id} />))}
         </div>
     )
 }

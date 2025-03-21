@@ -68,9 +68,9 @@ export type UpdateDocument = ReturnType<typeof updateDocumentAC>
 export type tableActions = SetTableData | AddDocument | DeleteDocument | UpdateDocument | AppError
 
 
-export const fetchTableDataTC = (token: string) => async (dispatch: any) => {
+export const fetchTableDataTC = () => async (dispatch: any) => {
     dispatch(appStatusAC("loading"))
-    return tableAPI.getTableData(token)
+    return tableAPI.getTableData()
         .then(res => {
             if (res.data.error_code === 0) {
                 if(res.data.data){
@@ -91,9 +91,9 @@ export const fetchTableDataTC = (token: string) => async (dispatch: any) => {
         })
 }
 
-export const deleteDocumentTC = (id: string, token: string) => async (dispatch: any) => {
+export const deleteDocumentTC = (id: string) => async (dispatch: any) => {
     dispatch(appStatusAC("loading"))
-    return tableAPI.deleteDocument(id, token)
+    return tableAPI.deleteDocument(id)
         .then(res => {
             if (res.data.error_code === 0) {
                 dispatch(deleteDocumentAC(id))
@@ -112,9 +112,9 @@ export const deleteDocumentTC = (id: string, token: string) => async (dispatch: 
         })
 }
 
-export const createDocumentTC = (model: Omit<Document, 'id'>, token: string) => async (dispatch: any) => {
+export const createDocumentTC = (model: Omit<Document, 'id'>) => async (dispatch: any) => {
     dispatch(appStatusAC("loading"))
-    return tableAPI.createDocument(model, token)
+    return tableAPI.createDocument(model)
         .then(res => {
             if (res.data.error_code === 0) {
                 if (res.data.data) {
@@ -155,7 +155,7 @@ export const updateDocumentTC = (updateDate: UpdateDate) => async (dispatch: any
             [updateDate.nameTitle]: updateDate.newTitle
         }
 
-        return tableAPI.updateDocument(updateModelDocument, updateDate.token)
+        return tableAPI.updateDocument(updateModelDocument)
             .then(res => {
                 if (res.data.error_code === 0) {
                     dispatch(updateDocumentAC(res.data.data))

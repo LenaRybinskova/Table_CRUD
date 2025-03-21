@@ -26,7 +26,7 @@ export const TablePage = () => {
     useEffect(() => {
         const tokenLS = localStorage.getItem('token');
         if(tokenLS){
-            dispatch(fetchTableDataTC(tokenLS))
+            dispatch(fetchTableDataTC())
             dispatch(loginAC({token:tokenLS}))
         }
         else{

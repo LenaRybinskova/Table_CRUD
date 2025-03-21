@@ -38,7 +38,7 @@ export const Card = (props: Props) => {
     const fields = Object.keys(document as Omit<Document, "id">) as Array<keyof Omit<Document, "id">>
 
     const handleDelete = () => {
-        dispatch(deleteDocumentTC(id, token))
+        dispatch(deleteDocumentTC(id))
     }
 
     const editCardHandle = (newTitle: string, field: string) => {

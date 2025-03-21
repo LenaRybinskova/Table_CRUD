@@ -2,7 +2,7 @@ import {SubmitHandler, useForm} from 'react-hook-form';
 import {InputContainer} from '@/common/components/Input/InputContainer.tsx';
 import {ButtonContainer} from '@/common/components/Button/ButtonContainer.tsx';
 import {generateData} from '@/common/utils/generateData.ts';
-import {useAppDispatch, useAppSelector} from '@/app/store.ts';
+import {useAppDispatch} from '@/app/store.ts';
 import {createDocumentTC} from '@/features/TablePage/model/tableReducer.ts';
 import {Document} from '@/features/TablePage/model/tableAPI.types.ts';
 
@@ -20,7 +20,6 @@ type FormValue = {
 export const AddDocumentFrom = () => {
 
     const {handleSubmit, control, formState: {errors, isValid}} = useForm<FormValue>({mode: 'onBlur'});
-    const token = useAppSelector(state => state.app.token)
     const dispatch = useAppDispatch()
 
     const onSubmit: SubmitHandler<FormValue> = (data: FormValue) => {
@@ -35,7 +34,7 @@ export const AddDocumentFrom = () => {
             employeeSigDate: generateData(),
             companySigDate: generateData(),
         }
-        dispatch(createDocumentTC(modelDocument, token))
+        dispatch(createDocumentTC(modelDocument))
 
     };
 

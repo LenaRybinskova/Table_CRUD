@@ -12,7 +12,7 @@ export const tableAPI = {
         });
     },
     deleteDocument(id: string, token: string) {
-        return instance.post(`/ru/data/v3/testmethods/docs/userdocs/delete/${id}`,{}, {
+        return instance.post(`/ru/data/v3/testmethods/docs/userdocs/delete/${id}`, {},{
             headers: {
                 'x-auth': token
             }

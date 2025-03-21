@@ -1,6 +1,7 @@
 import {tableAPI} from '@/features/TablePage/model/tableAPI.ts';
 import {Document, UpdateDate} from '@/features/TablePage/model/tableAPI.types.ts';
 import {AppRootStateType} from '@/app/store.ts';
+import {AppError, appErrorAC, appStatusAC} from '@/app/appReducer.ts';
 
 const initialState = {
     data: [] as Document[],
@@ -64,41 +65,79 @@ export type SetTableData = ReturnType<typeof setDocumetsAC>
 export type AddDocument = ReturnType<typeof addDocumentAC>
 export type DeleteDocument = ReturnType<typeof deleteDocumentAC>
 export type UpdateDocument = ReturnType<typeof updateDocumentAC>
-export type tableActions = SetTableData | AddDocument | DeleteDocument | UpdateDocument
+export type tableActions = SetTableData | AddDocument | DeleteDocument | UpdateDocument | AppError
 
 
 export const fetchTableDataTC = (token: string) => async (dispatch: any) => {
+    dispatch(appStatusAC("loading"))
     return tableAPI.getTableData(token)
         .then(res => {
             if (res.data.error_code === 0) {
                 if(res.data.data){
                     dispatch(setDocumetsAC(res.data.data))
+                    dispatch(appStatusAC("succeeded"))
                 }
             }
+            else {
+                if(res.data.error_text){
+                    dispatch(appErrorAC(res.data.error_text))
+                    dispatch(appStatusAC('failed'))
+                }
+            }
+        })
+        .catch((error) =>{
+            dispatch(appErrorAC(error.message))
+            dispatch(appStatusAC('failed'))
         })
 }
 
 export const deleteDocumentTC = (id: string, token: string) => async (dispatch: any) => {
+    dispatch(appStatusAC("loading"))
     return tableAPI.deleteDocument(id, token)
         .then(res => {
             if (res.data.error_code === 0) {
                 dispatch(deleteDocumentAC(id))
+                dispatch(appStatusAC("succeeded"))
             }
+            else {
+                if(res.data.error_text){
+                    console.log("deleteDocumentTC else res.data.error_text:", res.data.error_text)
+                    dispatch(appErrorAC(res.data.error_text))
+                    dispatch(appStatusAC('failed'))
+                }
+            }
+        }).catch((error) =>{
+            dispatch(appErrorAC(error.message))
+            dispatch(appStatusAC('failed'))
         })
 }
 
 export const createDocumentTC = (model: Omit<Document, 'id'>, token: string) => async (dispatch: any) => {
+    dispatch(appStatusAC("loading"))
     return tableAPI.createDocument(model, token)
         .then(res => {
             if (res.data.error_code === 0) {
                 if (res.data.data) {
                     dispatch(addDocumentAC(res.data.data))
+                    dispatch(appStatusAC("succeeded"))
                 }
             }
+            else {
+                if(res.data.error_text){
+                    console.log("createDocumentTC else res.data.error_text:", res.data.error_text)
+                    dispatch(appErrorAC(res.data.error_text))
+                    dispatch(appStatusAC('failed'))
+                }
+            }
+        })
+        .catch((error) =>{
+            dispatch(appErrorAC(error.message))
+            dispatch(appStatusAC('failed'))
         })
 }
 
 export const updateDocumentTC = (updateDate: UpdateDate) => async (dispatch: any, getState: () => AppRootStateType) => {
+    dispatch(appStatusAC("loading"))
     const state = getState()
     const document = state.table.data.find(doc => doc.id === updateDate.id)
 
@@ -120,7 +159,17 @@ export const updateDocumentTC = (updateDate: UpdateDate) => async (dispatch: any
             .then(res => {
                 if (res.data.error_code === 0) {
                     dispatch(updateDocumentAC(res.data.data))
+                    dispatch(appStatusAC("succeeded"))
                 }
+                else {
+                    if(res.data.error_text){
+                        dispatch(appErrorAC(res.data.error_text))
+                        dispatch(appStatusAC('failed'))
+                    }
+                }
+            }).catch((error) =>{
+                dispatch(appErrorAC(error.message))
+                dispatch(appStatusAC('failed'))
             })
     }
 }

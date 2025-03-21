@@ -4,7 +4,7 @@ import {validationRules} from '@/features/auth/ui/validationRules.ts';
 import {ButtonContainer} from '@/common/components/Button/ButtonContainer.tsx';
 import {InputContainer} from '@/common/components/Input/InputContainer.tsx';
 import {useAppDispatch, useAppSelector} from '@/app/store.ts';
-import {loginTC} from '@/app/appReducer.ts';
+import {appErrorAC, loginTC} from '@/app/appReducer.ts';
 import {Stack} from '@mui/material';
 import {toast} from 'react-toastify';
 import {useEffect} from 'react';
@@ -17,7 +17,6 @@ type FormValue = {
     password: string
 }
 
-//TODO интерсептор настроить
 export const Auth = () => {
     const {handleSubmit, control, formState: {errors, isValid}} = useForm<FormValue>({mode: 'onBlur'});
     const error = useAppSelector(state => state.app.error, shallowEqual);
@@ -39,6 +38,7 @@ export const Auth = () => {
                     localStorage.setItem('username', data.username)
                     localStorage.setItem('token', res)
                     navigate('/table-page')
+                     dispatch(appErrorAC(""))
                 }
             })
     };

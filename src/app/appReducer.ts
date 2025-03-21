@@ -1,5 +1,6 @@
 import {authAPI} from '@/features/auth/model/authApi.ts';
 import {LoginData, Token} from '@/app/app.types.ts';
+import {handleServerAppError, handleServerNetworkError} from '@/common/utils/handleError.ts';
 
 export type RequestStatus = 'idle' | 'loading' | 'succeeded' | 'failed'
 
@@ -7,8 +8,7 @@ export type RequestStatus = 'idle' | 'loading' | 'succeeded' | 'failed'
 const initialState = {
     token: '',
     status: 'idle',
-    error: "",
-    isInitialized: false
+    error: '',
 }
 
 export type initialStateType = typeof initialState;
@@ -16,6 +16,7 @@ export type initialStateType = typeof initialState;
 const LOGIN = 'LOGIN'
 const LOADING = 'LOADING'
 const SET_ERROR = 'SET_ERROR'
+export const LOG_OUT = 'LOG_OUT'
 
 export const appReducer = (state: initialStateType = initialState, action: any): initialStateType => {
     switch (action.type) {
@@ -25,6 +26,8 @@ export const appReducer = (state: initialStateType = initialState, action: any):
             return {...state, status: action.payload};
         case SET_ERROR:
             return {...state, error: action.payload};
+        case LOG_OUT:
+            return initialState;
         default:
             return state
     }
@@ -52,10 +55,17 @@ export const appErrorAC = (error: string) => {
     } as const
 }
 
+export const logoutAC = () => {
+    return {
+        type: LOG_OUT,
+    } as const
+}
+
 export type Login = ReturnType<typeof loginAC>
 export type AppStatus = ReturnType<typeof appStatusAC>
 export type AppError = ReturnType<typeof appErrorAC>
-export type AppActions = Login | AppStatus | AppError
+export type Logout = ReturnType<typeof logoutAC>
+export type AppActions = Login | AppStatus | AppError | Logout
 
 
 export const loginTC = (data: LoginData) => async (dispatch: any) => {
@@ -70,14 +80,10 @@ export const loginTC = (data: LoginData) => async (dispatch: any) => {
                     return token
                 }
             } else {
-                if(res.data.error_text){
-                    dispatch(appErrorAC(res.data.error_text))
-                    dispatch(appStatusAC('failed'))
-                }
+                handleServerAppError(res, dispatch)
             }
         })
-        .catch((error) =>{
-            dispatch(appErrorAC(error.message))
-            dispatch(appStatusAC('failed'))
+        .catch((error) => {
+            handleServerNetworkError(error, dispatch)
         })
 }

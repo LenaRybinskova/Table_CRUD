@@ -4,6 +4,7 @@ export type BaseResponse<T> = {
     data?:T
     error_message: string
     timings: null
+    error_text?:string
 }
 
 export type Token={ token: string }

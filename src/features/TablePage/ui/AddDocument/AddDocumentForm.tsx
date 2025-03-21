@@ -90,7 +90,7 @@ export const AddDocumentFrom = () => {
             />
 
             <ButtonContainer type="submit" variant="contained" sx={{mt: 2}} disabled={!isValid}>
-                Отправить
+                Создать
             </ButtonContainer>
         </form>
     );

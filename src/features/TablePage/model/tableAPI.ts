@@ -17,6 +17,7 @@ export const tableAPI = {
     updateDocument(document: Document, token: string) {
         return instance.post(`/ru/data/v3/testmethods/docs/userdocs/set/${document.id}`,  document,);
     },
+
 }
 /*
 Omit<Document, 'id'>*/

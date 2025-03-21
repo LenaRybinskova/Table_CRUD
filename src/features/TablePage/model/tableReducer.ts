@@ -1,7 +1,8 @@
 import {tableAPI} from '@/features/TablePage/model/tableAPI.ts';
 import {Document, UpdateDate} from '@/features/TablePage/model/tableAPI.types.ts';
 import {AppRootStateType} from '@/app/store.ts';
-import {AppError, appErrorAC, appStatusAC} from '@/app/appReducer.ts';
+import {AppError, appStatusAC, LOG_OUT, Logout} from '@/app/appReducer.ts';
+import {handleServerAppError, handleServerNetworkError} from '@/common/utils/handleError.ts';
 
 const initialState = {
     data: [] as Document[],
@@ -21,19 +22,18 @@ export const tableReducer = (state: initialStateType = initialState, action: any
         case ADD_DOCUMENT:
             return {...state, data: [...state.data, action.payload]}
         case UPDATE_DOCUMENT:
-            return {
-                ...state,
-                data: [...state.data.map(document => document.id === action.payload.id ? {...action.payload} : document)]
-            }
+            return {...state,
+                data: [...state.data.map(document => document.id === action.payload.id ? {...action.payload} : document)]}
         case DELETE_DOCUMENT:
-            const newState={...state, data: state.data.filter(doc => doc.id !== action.payload)}
-            return newState
+            return {...state, data: state.data.filter(doc => doc.id !== action.payload)}
+        case LOG_OUT:
+            return initialState;
         default:
             return state
     }
 }
 
-// TODO протипизировать норм
+
 export const setDocumetsAC = (data: Document[]) => {
     return {
         type: FETCH_TABLE_DATA,
@@ -65,79 +65,62 @@ export type SetTableData = ReturnType<typeof setDocumetsAC>
 export type AddDocument = ReturnType<typeof addDocumentAC>
 export type DeleteDocument = ReturnType<typeof deleteDocumentAC>
 export type UpdateDocument = ReturnType<typeof updateDocumentAC>
-export type tableActions = SetTableData | AddDocument | DeleteDocument | UpdateDocument | AppError
+export type tableActions = SetTableData | AddDocument | DeleteDocument | UpdateDocument | AppError | Logout
 
 
 export const fetchTableDataTC = () => async (dispatch: any) => {
-    dispatch(appStatusAC("loading"))
+    dispatch(appStatusAC('loading'))
     return tableAPI.getTableData()
         .then(res => {
             if (res.data.error_code === 0) {
-                if(res.data.data){
+                if (res.data.data) {
                     dispatch(setDocumetsAC(res.data.data))
-                    dispatch(appStatusAC("succeeded"))
+                    dispatch(appStatusAC('succeeded'))
                 }
-            }
-            else {
-                if(res.data.error_text){
-                    dispatch(appErrorAC(res.data.error_text))
-                    dispatch(appStatusAC('failed'))
-                }
+            } else {
+                handleServerAppError(res, dispatch)
             }
         })
-        .catch((error) =>{
-            dispatch(appErrorAC(error.message))
-            dispatch(appStatusAC('failed'))
+        .catch((error) => {
+            handleServerNetworkError(error, dispatch)
         })
 }
 
 export const deleteDocumentTC = (id: string) => async (dispatch: any) => {
-    dispatch(appStatusAC("loading"))
+    dispatch(appStatusAC('loading'))
     return tableAPI.deleteDocument(id)
         .then(res => {
             if (res.data.error_code === 0) {
                 dispatch(deleteDocumentAC(id))
-                dispatch(appStatusAC("succeeded"))
+                dispatch(appStatusAC('succeeded'))
+            } else {
+                handleServerAppError(res, dispatch)
             }
-            else {
-                if(res.data.error_text){
-                    console.log("deleteDocumentTC else res.data.error_text:", res.data.error_text)
-                    dispatch(appErrorAC(res.data.error_text))
-                    dispatch(appStatusAC('failed'))
-                }
-            }
-        }).catch((error) =>{
-            dispatch(appErrorAC(error.message))
-            dispatch(appStatusAC('failed'))
+        }).catch((error) => {
+            handleServerNetworkError(error, dispatch)
         })
 }
 
 export const createDocumentTC = (model: Omit<Document, 'id'>) => async (dispatch: any) => {
-    dispatch(appStatusAC("loading"))
+    dispatch(appStatusAC('loading'))
     return tableAPI.createDocument(model)
         .then(res => {
             if (res.data.error_code === 0) {
                 if (res.data.data) {
                     dispatch(addDocumentAC(res.data.data))
-                    dispatch(appStatusAC("succeeded"))
+                    dispatch(appStatusAC('succeeded'))
                 }
-            }
-            else {
-                if(res.data.error_text){
-                    console.log("createDocumentTC else res.data.error_text:", res.data.error_text)
-                    dispatch(appErrorAC(res.data.error_text))
-                    dispatch(appStatusAC('failed'))
-                }
+            } else {
+                handleServerAppError(res, dispatch)
             }
         })
-        .catch((error) =>{
-            dispatch(appErrorAC(error.message))
-            dispatch(appStatusAC('failed'))
+        .catch((error) => {
+            handleServerNetworkError(error, dispatch)
         })
 }
 
 export const updateDocumentTC = (updateDate: UpdateDate) => async (dispatch: any, getState: () => AppRootStateType) => {
-    dispatch(appStatusAC("loading"))
+    dispatch(appStatusAC('loading'))
     const state = getState()
     const document = state.table.data.find(doc => doc.id === updateDate.id)
 
@@ -159,17 +142,12 @@ export const updateDocumentTC = (updateDate: UpdateDate) => async (dispatch: any
             .then(res => {
                 if (res.data.error_code === 0) {
                     dispatch(updateDocumentAC(res.data.data))
-                    dispatch(appStatusAC("succeeded"))
+                    dispatch(appStatusAC('succeeded'))
+                } else {
+                    handleServerAppError(res, dispatch)
                 }
-                else {
-                    if(res.data.error_text){
-                        dispatch(appErrorAC(res.data.error_text))
-                        dispatch(appStatusAC('failed'))
-                    }
-                }
-            }).catch((error) =>{
-                dispatch(appErrorAC(error.message))
-                dispatch(appStatusAC('failed'))
+            }).catch((error) => {
+                handleServerNetworkError(error, dispatch)
             })
     }
 }

@@ -39,7 +39,7 @@ export const AddDocumentFrom = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <InputContainer
                 name="companySignatureName"
                 control={control}
@@ -91,6 +91,7 @@ export const AddDocumentFrom = () => {
             <ButtonContainer type="submit" variant="contained" sx={{mt: 2}} disabled={!isValid}>
                 Создать
             </ButtonContainer>
+
         </form>
     );
 }

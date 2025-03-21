@@ -51,7 +51,7 @@ export const Auth = () => {
                     control={control}
                     errorMessage={errors.username?.message}
                     rules={validationRules.username}
-                    textPlaceholder="Введите имя"
+                    textPlaceholder="user55"
                     title="Имя пользователя"
                 />
 
@@ -59,9 +59,9 @@ export const Auth = () => {
                     name="password"
                     control={control}
                     errorMessage={errors.password?.message}
-                    textPlaceholder="Введите пароль"
                     title="Пароль"
-                    type="password"
+                    textPlaceholder="password"
+                    autoComplete="off"
                 />
 
                 <ButtonContainer type="submit" variant="contained" sx={{mt: 2}} disabled={!isValid}>

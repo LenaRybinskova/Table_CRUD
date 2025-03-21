@@ -1,62 +1,89 @@
-import {Book} from '@/app/booksAPI.types.ts';
-import {authApi} from '@/app/booksAPI.ts';
+import {authAPI} from '@/features/auth/model/authApi.ts';
+import {LoginData, Token} from '@/app/app.types.ts';
+import {handleServerAppError, handleServerNetworkError} from '@/common/utils/handleError.ts';
 
-
-
-export type BookApp = Book & {
-    author: string
-    price: number
-    url:string
-};
 export type RequestStatus = 'idle' | 'loading' | 'succeeded' | 'failed'
 
 
 const initialState = {
-    books: [] as BookApp[],
+    token: '',
     status: 'idle',
+    error: '',
 }
 
 export type initialStateType = typeof initialState;
 
-const SET_BOOK = 'SET_BOOK'
-const SET_APP_STATUS = 'SET_APP_STATUS'
+const LOGIN = 'LOGIN'
+const LOADING = 'LOADING'
+const SET_ERROR = 'SET_ERROR'
+export const LOG_OUT = 'LOG_OUT'
 
 export const appReducer = (state: initialStateType = initialState, action: any): initialStateType => {
     switch (action.type) {
-        case SET_BOOK:
-            return {...state,}
+        case LOGIN:
+            return {...state, token: action.payload.token};
+        case LOADING:
+            return {...state, status: action.payload};
+        case SET_ERROR:
+            return {...state, error: action.payload};
+        case LOG_OUT:
+            return initialState;
         default:
             return state
     }
 }
-export const setBookAC = (data: Book[]) => {
+
+
+export const loginAC = (token: Token) => {
     return {
-        type: SET_BOOK,
-        payload: data
+        type: LOGIN,
+        payload: token
     } as const
 }
 
-export const setAppStatusAC = (status: RequestStatus) => {
+export const appStatusAC = (status: RequestStatus) => {
     return {
-        type: SET_APP_STATUS,
+        type: LOADING,
         payload: status
     } as const
 }
 
-export type SetBook = ReturnType<typeof setBookAC>
-export type SetAppStatus = ReturnType<typeof setAppStatusAC>
-export type AppActions = SetBook | SetAppStatus
+export const appErrorAC = (error: string) => {
+    return {
+        type: SET_ERROR,
+        payload: error
+    } as const
+}
 
-export const fetchBooksData = () => async (dispatch: any) => {
-    dispatch(setAppStatusAC('loading'))
-    return authApi.getBooks()
-        .then(data => {
-            dispatch(setBookAC(data))
-            dispatch(setAppStatusAC('succeeded'))
-        })
-        .catch(() => {
-            dispatch(setAppStatusAC('failed'))
-                throw new Error('Failed to fetch info')
+export const logoutAC = () => {
+    return {
+        type: LOG_OUT,
+    } as const
+}
+
+export type Login = ReturnType<typeof loginAC>
+export type AppStatus = ReturnType<typeof appStatusAC>
+export type AppError = ReturnType<typeof appErrorAC>
+export type Logout = ReturnType<typeof logoutAC>
+export type AppActions = Login | AppStatus | AppError | Logout
+
+
+export const loginTC = (data: LoginData) => async (dispatch: any) => {
+    dispatch(appStatusAC('loading'))
+    return authAPI.login(data)
+        .then(res => {
+            if (res.data.error_code === 0) {
+                if (res.data?.data?.token) {
+                    const token = res.data?.data?.token
+                    dispatch(loginAC({token}))
+                    dispatch(appStatusAC('succeeded'))
+                    return token
+                }
+            } else {
+                handleServerAppError(res, dispatch)
             }
-        )
+        })
+        .catch((error) => {
+            handleServerNetworkError(error, dispatch)
+        })
 }

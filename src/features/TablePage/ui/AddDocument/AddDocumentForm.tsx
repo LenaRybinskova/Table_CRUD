@@ -5,6 +5,7 @@ import {generateData} from '@/common/utils/generateData.ts';
 import {useAppDispatch} from '@/app/store.ts';
 import {createDocumentTC} from '@/features/TablePage/model/tableReducer.ts';
 import {Document} from '@/features/TablePage/model/tableAPI.types.ts';
+import {Box} from '@mui/material';
 
 
 type FormValue = {
@@ -39,7 +40,8 @@ export const AddDocumentFrom = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <InputContainer
                 name="companySignatureName"
                 control={control}
@@ -88,10 +90,10 @@ export const AddDocumentFrom = () => {
                 title="имя сотрудника"
             />
 
-            <ButtonContainer type="submit" variant="contained" sx={{mt: 2}} disabled={!isValid}>
+            <ButtonContainer type="submit"  disabled={!isValid}>
                 Создать
             </ButtonContainer>
-
+            </Box>
         </form>
     );
 }

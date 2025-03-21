@@ -11,7 +11,7 @@ export type InputContainerProps<T extends FieldValues> = TextFieldProps & {
     title?: string;
 };
 
-export const InputContainer = <T extends FieldValues>({name, control, errorMessage, rules, textPlaceholder, title, ...rest}: InputContainerProps<T>) => {
+export const InputContainer = <T extends FieldValues>({name, control, errorMessage, rules = { required: 'Обязательное поле' }, textPlaceholder, title, ...rest}: InputContainerProps<T>) => {
 
     return (
         <Controller

@@ -5,12 +5,12 @@ import {fetchTableDataTC} from '@/features/TablePage/model/tableReducer.ts';
 import {Document} from '@/features/TablePage/model/tableAPI.types.ts';
 import {Card} from '@/common/components/Card/Card.tsx';
 import {AddDocumentFrom} from '@/features/TablePage/ui/AddDocument/AddDocumentForm.tsx';
-import {Box, CircularProgress, Typography} from '@mui/material';
+import {Box, CircularProgress, Container, Typography} from '@mui/material';
 import {appErrorAC, loginAC, logoutAC} from '@/app/appReducer.ts';
-import {styles} from './styles.ts'
 import {toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {ButtonContainer} from '@/common/components/Button/ButtonContainer.tsx';
+import {containerStyle, documentTitleStyle, gridStyle, leftBoxStyle, rightBoxStyle} from '@/features/TablePage/ui/TablePage/styles.ts';
 
 
 export const TablePage = () => {
@@ -20,19 +20,18 @@ export const TablePage = () => {
     const status = useAppSelector(state => state.app.status)
 
 
-    const isLoading=status==="loading"
+    const isLoading = status === 'loading'
 
     const navigate = useNavigate()
     const dispatch = useAppDispatch();
 
     useEffect(() => {
         const tokenLS = localStorage.getItem('token');
-        if(tokenLS){
-            dispatch(appErrorAC(""))
+        if (tokenLS) {
+            dispatch(appErrorAC(''))
             dispatch(fetchTableDataTC())
-            dispatch(loginAC({token:tokenLS}))
-        }
-        else{
+            dispatch(loginAC({token: tokenLS}))
+        } else {
             navigate('/')
         }
     }, [token]);
@@ -44,7 +43,7 @@ export const TablePage = () => {
         }
     }, [error]);
 
-    const handleLogout=()=>{
+    const handleLogout = () => {
         dispatch(logoutAC())
         localStorage.removeItem('token')
         localStorage.removeItem('username')
@@ -53,29 +52,35 @@ export const TablePage = () => {
     return (
         <>
             {isLoading ? (
-                <CircularProgress sx={styles.circularProgress} />
+                <CircularProgress/>
             ) : (
-                <Box sx={styles.container}>
-                    <Box sx={styles.createDocumentBox}>
-                        <ButtonContainer type="button" variant="contained" sx={{mt: 2}} onClick={handleLogout}>Выйти</ButtonContainer>
-                        <Typography variant="h6" sx={styles.createDocumentTitle}>
-                            Создайте новый документ:
-                        </Typography>
-                        <AddDocumentFrom />
+                <Container sx={containerStyle}>
+                    <Box>
+                        <Box sx={leftBoxStyle}>
+                            <Typography variant="h6">
+                                Создайте новый документ:
+                            </Typography>
+                            <AddDocumentFrom />
+                        </Box>
+                        <ButtonContainer type="button" onClick={handleLogout}>
+                            Выйти
+                        </ButtonContainer>
                     </Box>
 
-                    <Box sx={styles.documentListBox}>
-                        <Typography variant="h6" sx={styles.documentListTitle}>
+                    <Box sx={rightBoxStyle}>
+                        <Typography variant="h6" sx={documentTitleStyle}>
                             Список документов:
                         </Typography>
 
-                        <Box sx={styles.gridBox}>
+                        <div style={gridStyle}>
                             {documents?.map((document) => (
-                                <Card document={document} key={document.id} />
+                                <div key={document.id} style={{ boxSizing: 'border-box' }}>
+                                    <Card document={document} />
+                                </div>
                             ))}
-                        </Box>
+                        </div>
                     </Box>
-                </Box>
+                </Container>
             )}
         </>
     )
